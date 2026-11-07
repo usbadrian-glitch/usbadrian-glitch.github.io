@@ -60,20 +60,14 @@ footer .fs{font-weight:700;color:var(--navy)}
 <div class="card"><span>🔌</span>Instalaciones eléctricas</div>
 </div>
 
-<h2>La revisión cuesta esto. Sin sorpresas.</h2>
-<table>
-<tr><th>Zona</th><th style="text-align:right">Revisión a domicilio</th></tr>
-<tr><td>Este de Caracas</td><td class="price"><b>$15</b></td></tr>
-<tr><td>Baruta · La Trinidad · El Hatillo</td><td class="price"><b>$20</b></td></tr>
-<tr><td>Televisor de más de 60" — Este de Caracas</td><td class="price"><b>$20</b></td></tr>
-<tr><td>Televisor de más de 60" — La Trinidad · El Hatillo</td><td class="price"><b>$30</b></td></tr>
-</table>
-<p class="note">El precio de la revisión se confirma antes de la visita. La reparación se cotiza aparte, también antes de hacerla.</p>
+<h2>Precio claro, el de tu zona.</h2>
+<p class="note">No publicamos una tabla con todos los precios: llena el formulario de abajo con tu servicio y tu zona y ves el precio exacto de TU revisión antes de pedirla. La reparación se cotiza aparte, también antes de hacerla.</p>
 
 <h2>Pide tu revisión</h2>
 <form id="f">
 <label>¿Qué hay que revisar?</label>
 <select id="servicio">
+<option value="" selected>Elige el servicio…</option>
 <option value="televisor">Televisor</option>
 <option value="computadora">Computadora</option>
 <option value="nevera">Nevera</option>
@@ -92,12 +86,14 @@ footer .fs{font-weight:700;color:var(--navy)}
 <textarea id="falla" rows="3" placeholder="Ej.: se escucha pero no se ve la imagen"></textarea>
 <label>Tu zona</label>
 <select id="zona">
+<option value="" selected>Elige tu zona…</option>
 <option value="este">Este de Caracas</option>
 <option value="baruta">Baruta</option>
 <option value="trinidad">La Trinidad</option>
 <option value="hatillo">El Hatillo</option>
+<option value="otra">Otra zona de Caracas</option>
 </select>
-<div id="precioBox">Revisión: $15</div>
+<div id="precioBox">Elige tu servicio y tu zona para ver el precio de TU revisión</div>
 <button type="submit">Pedir mi revisión por WhatsApp</button>
 </form>
 
@@ -108,17 +104,30 @@ footer .fs{font-weight:700;color:var(--navy)}
 </div>
 <script>
 var NOMBRES={televisor:'Revisión de televisor a domicilio',computadora:'Revisión de computadora a domicilio',nevera:'Revisión de nevera a domicilio',lavadora:'Revisión de lavadora a domicilio',aire:'Revisión de aire acondicionado a domicilio',audio:'Revisión de amplificador / hilo musical a domicilio',instalacion:'Trabajo de instalación eléctrica'};
+var GRANDES={nevera:1,lavadora:1,aire:1};
 function precio(){
  var s=document.getElementById('servicio').value, z=document.getElementById('zona').value, t=document.getElementById('tamano').value;
  document.getElementById('tvBox').style.display=(s==='televisor')?'block':'none';
- var p=(z==='este')?15:20;
- if(s==='televisor'&&t==='grande'){
-   if(z==='este')p=20; else if(z==='trinidad'||z==='hatillo')p=30; else p=null;
+ if(s===''||z==='')return null;
+ if(GRANDES[s]){
+   if(z==='este')return 30;
+   if(z==='hatillo')return 40;
+   if(z==='otra')return 20;
+   return null;
  }
- return p;
+ if(s==='televisor'&&t==='grande'){
+   if(z==='este')return 20;
+   if(z==='trinidad'||z==='hatillo')return 30;
+   return null;
+ }
+ if(z==='este')return 15;
+ if(z==='baruta'||z==='trinidad'||z==='hatillo')return 20;
+ return null;
 }
 function refrescar(){
+ var s=document.getElementById('servicio').value, z=document.getElementById('zona').value;
  var p=precio();
+ if(s===''||z===''){document.getElementById('precioBox').textContent='Elige tu servicio y tu zona para ver el precio de TU revisión';return;}
  document.getElementById('precioBox').textContent=(p===null)?'Revisión: precio a confirmar según el equipo':'Revisión: $'+p;
 }
 ['servicio','zona','tamano'].forEach(function(id){document.getElementById(id).addEventListener('change',refrescar)});
