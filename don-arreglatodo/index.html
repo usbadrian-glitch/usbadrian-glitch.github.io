@@ -110,10 +110,9 @@ function precio(){
  document.getElementById('tvBox').style.display=(s==='televisor')?'block':'none';
  if(s===''||z==='')return null;
  if(GRANDES[s]){
-   if(z==='este')return 30;
    if(z==='hatillo')return 40;
    if(z==='otra')return 20;
-   return null;
+   return 30;
  }
  if(s==='televisor'&&t==='grande'){
    if(z==='este')return 20;
