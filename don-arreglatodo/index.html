@@ -61,7 +61,7 @@ footer .fs{font-weight:700;color:var(--navy)}
 </div>
 
 <h2>Precio claro, el de tu zona.</h2>
-<p class="note">No publicamos una tabla con todos los precios: llena el formulario de abajo con tu servicio y tu zona y ves el precio exacto de TU revisión antes de pedirla. La reparación se cotiza aparte, también antes de hacerla.</p>
+<p class="note">No publicamos una tabla con todos los precios: llena el formulario de abajo con tu servicio y tu zona y ves el precio exacto de TU revisión antes de pedirla. La reparación se cotiza aparte, también antes de hacerla. Y si tu equipo es muy costoso o difícil de manejar, la revisión va de $20 a $40 según el caso, en cualquier zona de Caracas.</p>
 
 <h2>Pide tu revisión</h2>
 <form id="f">
@@ -75,6 +75,7 @@ footer .fs{font-weight:700;color:var(--navy)}
 <option value="aire">Aire acondicionado</option>
 <option value="audio">Amplificador / hilo musical</option>
 <option value="instalacion">Instalación eléctrica</option>
+<option value="otro">Otro artículo / equipo no listado</option>
 </select>
 <div id="tvBox">
 <label>Tamaño del televisor</label>
@@ -87,11 +88,13 @@ footer .fs{font-weight:700;color:var(--navy)}
 <label>Tu zona</label>
 <select id="zona">
 <option value="" selected>Elige tu zona…</option>
-<option value="este">Este de Caracas</option>
-<option value="baruta">Baruta</option>
+<option value="centro">Centro de Caracas — La Candelaria, San Bernardino, Quinta Crespo, San Juan, El Paraíso</option>
+<option value="chacao">Chacao — Altamira, Los Palos Grandes, La Castellana, El Rosal</option>
+<option value="sucre">Sucre — Petare, La California, Los Dos Caminos, La Urbina, El Marqués</option>
+<option value="baruta">Baruta — Las Mercedes, El Cafetal, Prados del Este, Santa Paula</option>
 <option value="trinidad">La Trinidad</option>
-<option value="hatillo">El Hatillo</option>
-<option value="otra">Otra zona de Caracas</option>
+<option value="hatillo">El Hatillo — La Lagunita, Alto Hatillo</option>
+<option value="lejos">Caracas lejos del centro — a más de 20 min del centro: Caricuao, Antímano, El Junquito</option>
 </select>
 <div id="precioBox">Elige tu servicio y tu zona para ver el precio de TU revisión</div>
 <button type="submit">Pedir mi revisión por WhatsApp</button>
@@ -103,42 +106,45 @@ footer .fs{font-weight:700;color:var(--navy)}
 </footer>
 </div>
 <script>
-var NOMBRES={televisor:'Revisión de televisor a domicilio',computadora:'Revisión de computadora a domicilio',nevera:'Revisión de nevera a domicilio',lavadora:'Revisión de lavadora a domicilio',aire:'Revisión de aire acondicionado a domicilio',audio:'Revisión de amplificador / hilo musical a domicilio',instalacion:'Trabajo de instalación eléctrica'};
+var NOMBRES={televisor:'Revisión de televisor a domicilio',computadora:'Revisión de computadora a domicilio',nevera:'Revisión de nevera a domicilio',lavadora:'Revisión de lavadora a domicilio',aire:'Revisión de aire acondicionado a domicilio',audio:'Revisión de amplificador / hilo musical a domicilio',instalacion:'Trabajo de instalación eléctrica',otro:'Otro artículo / equipo no listado'};
 var GRANDES={nevera:1,lavadora:1,aire:1};
 function precio(){
  var s=document.getElementById('servicio').value, z=document.getElementById('zona').value, t=document.getElementById('tamano').value;
  document.getElementById('tvBox').style.display=(s==='televisor')?'block':'none';
- if(s===''||z==='')return null;
+ if(s===''||z===''||s==='otro')return null;
  if(GRANDES[s]){
    if(z==='hatillo')return 40;
-   if(z==='otra')return 20;
+   if(z==='centro'||z==='lejos')return '20-40';
    return 30;
  }
  if(s==='televisor'&&t==='grande'){
-   if(z==='este')return 20;
+   if(z==='chacao'||z==='sucre')return 20;
    if(z==='trinidad'||z==='hatillo')return 30;
-   return null;
+   if(z==='lejos')return 40;
+   return '20-40';
  }
- if(z==='este')return 15;
- if(z==='baruta'||z==='trinidad'||z==='hatillo')return 20;
+ if(z==='centro')return 10;
+ if(z==='chacao'||z==='sucre')return 15;
+ if(z==='baruta'||z==='trinidad'||z==='hatillo'||z==='lejos')return 20;
  return null;
 }
 function refrescar(){
  var s=document.getElementById('servicio').value, z=document.getElementById('zona').value;
+ if(s==='otro'){document.getElementById('precioBox').textContent='Este equipo se cotiza con los detalles: cuéntanos qué es y qué falla tiene, y pide tu revisión por WhatsApp.';return;}
  var p=precio();
  if(s===''||z===''){document.getElementById('precioBox').textContent='Elige tu servicio y tu zona para ver el precio de TU revisión';return;}
- document.getElementById('precioBox').textContent=(p===null)?'Revisión: precio a confirmar según el equipo':'Revisión: $'+p;
+ document.getElementById('precioBox').textContent=(p===null)?'Revisión: precio a confirmar según el equipo':((p==='20-40')?'Revisión: entre $20 y $40, según el equipo':'Revisión: $'+p);
 }
 ['servicio','zona','tamano'].forEach(function(id){document.getElementById(id).addEventListener('change',refrescar)});
 refrescar();
 document.getElementById('f').addEventListener('submit',function(e){
  e.preventDefault();
  var s=document.getElementById('servicio').value, z=document.getElementById('zona');
- var zonaTxt=z.options[z.selectedIndex].text;
+ var zonaTxt=z.value?z.options[z.selectedIndex].text:'(sin especificar)';
  var eq=document.getElementById('equipo').value.trim()||'(sin especificar)';
  var fa=document.getElementById('falla').value.trim()||'(sin describir)';
  var p=precio();
- var rev=(p===null)?'a confirmar según el equipo':'$'+p;
+ var rev=(s==='otro')?'a cotizar según los detalles':((p===null)?'a confirmar según el equipo':((p==='20-40')?'entre $20 y $40 según el equipo':'$'+p));
  var msg='🧾 *Solicitud desde el catálogo*\nServicio: '+NOMBRES[s]+'\nEquipo: '+eq+'\nFalla: '+fa+'\nZona: '+zonaTxt+' · Revisión: '+rev+'\n📷 Ahorita te mando la foto de la etiqueta';
  window.open('https://wa.me/584129721877?text='+encodeURIComponent(msg),'_blank');
 });
